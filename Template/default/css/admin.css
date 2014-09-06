@@ -1,0 +1,26 @@
+/*
+  ContactForm
+
+  @author Team phpManufaktur <team@phpmanufaktur.de>
+  @link https://kit2.phpmanufaktur.de/ContactForm
+  @copyright 2014 Ralf Hertsch <ralf.hertsch@phpmanufaktur.de>
+  @license MIT License (MIT) http://www.opensource.org/licenses/MIT
+*/
+.container {
+  padding-left: 5px;
+  padding-right: 5px;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+ul.nav-sub {
+  margin-top: 15px;
+}
+
+/*
+  Wrapper for the about dialog
+*/
+#about-wrap {
+  margin: 50px 0 0 0;
+  padding: 0;
+}

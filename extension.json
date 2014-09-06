@@ -1,0 +1,83 @@
+{
+  "name":"ContactForm",
+  "guid":"0AB449D9-566C-4040-8F55-AFBCE4DA096A",
+  "category":"extension",
+  "group":"phpManufaktur",
+  "vendor":{
+      "name":"phpManufaktur",
+      "url":"https:\/\/phpmanufaktur.de",
+      "mail":"team@phpmanufaktur.de",
+      "address":{
+          "street":"Stockholmer Straße 31",
+          "zip":"13359",
+          "city":"Berlin",
+          "country":"Germany"
+      },
+      "phone":"+49 30 68813647"
+  },
+  "type":"application",
+  "path":"\/extension\/phpmanufaktur\/phpManufaktur\/ContactForm",
+  "namespace":"phpManufaktur\\ContactForm",
+  "link":{
+    "about":"\/form\/about"
+  },
+  "release":{
+    "number":"0.10",
+    "date":"2014-09-06",
+    "status":"beta"
+  },
+  "description":{
+    "en":{
+      "title":"Create contact forms for kitFramework",
+      "short":"Create contact forms for kitFramework",
+      "long":"Create contact forms for general use in kitFramework",
+      "url":"https:\/\/kit2.phpmanufaktur.de"
+    },
+    "de":{
+        "title":"Kontaktformulare für das kitFramework",
+        "short":"Kontaktformulare für das kitFramework",
+        "long":"Erstellen von Kontaktformularen für das kitFramework",
+        "url":"https:\/\/kit2.phpmanufaktur.de"
+    }
+  },
+  "require":{
+    "framework":{
+      "release":"0.27"
+    },
+    "extension":{
+        "phpmanufaktur":{
+            "Basic":{
+                "release":"1.0.10"
+            },
+            "Library":{
+                "release":"0.37"
+            },
+            "Contact":{
+              "release":"2.0.41"
+            }
+        }
+    }
+  },
+  "setup": {
+      "install":"\/admin\/contact\/setup",
+      "update":"\/admin\/contact\/update",
+      "uninstall":"\/admin\/contact\/uninstall",
+      "icon_path":{
+        "BlackCat":"\/extension\/phpmanufaktur\/phpManufaktur\/Contact\/Data\/Setup\/Icon\/icon.png",
+        "WebsiteBaker":"\/extension\/phpmanufaktur\/phpManufaktur\/Contact\/Data\/Setup\/Icon\/tool_icon.png"
+      }
+  },
+  "license": {
+    "name":"MIT License",
+    "url":"https:\/\/github.com\/phpManufaktur\/kfContact\/raw\/master\/LICENSE.md"
+  },
+  "download":{
+    "availability":"public",
+    "agreement":"free",
+    "github":{
+      "organization":"phpManufaktur",
+      "repository":"kfContact"
+    },
+    "url":"https:\/\/github.com\/phpManufaktur\/kfContact"
+  }
+}
