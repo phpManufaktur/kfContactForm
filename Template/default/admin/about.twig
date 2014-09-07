@@ -14,7 +14,7 @@
   {% set template_file = 'admin/body.twig' %}
 {% endif %}
 {% extends getTemplateFile(template_namespace, template_file) %}
-{% block title %}{{ 'About ContacForm'|trans }}{% endblock %}
+{% block title %}{{ 'About ContactForm'|trans }}{% endblock %}
 {% block stylesheet %}
   {{ parent() }}
   {% if fileExists(MANUFAKTUR_PATH ~ '/ContactForm/Template/' ~ FRAMEWORK_TEMPLATES.0 ~ '/css/admin.min.css') %}
