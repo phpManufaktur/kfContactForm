@@ -42,6 +42,7 @@ class Configuration
         return array(
             'nav_tabs' => array(
                 'order' => array(
+                    'edit',
                     'about'
                 ),
                 'default' => 'about'

@@ -29,6 +29,7 @@ class About extends Admin {
         return $this->app['twig']->render($this->app['utils']->getTemplateFile(
             '@phpManufaktur/ContactForm/Template', 'admin/about.twig'),
             array(
+                'config' => self::$config,
                 'usage' => self::$usage,
                 'toolbar' => $this->getToolbar('about'),
                 'extension' => $extension

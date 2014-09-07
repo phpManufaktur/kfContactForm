@@ -31,13 +31,13 @@
       "title":"Create contact forms for kitFramework",
       "short":"Create contact forms for kitFramework",
       "long":"Create contact forms for general use in kitFramework",
-      "url":"https:\/\/kit2.phpmanufaktur.de"
+      "url":"https:\/\/kit2.phpmanufaktur.de\/ContactForm"
     },
     "de":{
         "title":"Kontaktformulare für das kitFramework",
         "short":"Kontaktformulare für das kitFramework",
         "long":"Erstellen von Kontaktformularen für das kitFramework",
-        "url":"https:\/\/kit2.phpmanufaktur.de"
+        "url":"https:\/\/kit2.phpmanufaktur.de\/ContactForm"
     }
   },
   "require":{
@@ -59,25 +59,25 @@
     }
   },
   "setup": {
-      "install":"\/admin\/contact\/setup",
-      "update":"\/admin\/contact\/update",
-      "uninstall":"\/admin\/contact\/uninstall",
+      "install":"\/admin\/form\/setup",
+      "update":"\/admin\/form\/update",
+      "uninstall":"\/admin\/form\/uninstall",
       "icon_path":{
-        "BlackCat":"\/extension\/phpmanufaktur\/phpManufaktur\/Contact\/Data\/Setup\/Icon\/icon.png",
-        "WebsiteBaker":"\/extension\/phpmanufaktur\/phpManufaktur\/Contact\/Data\/Setup\/Icon\/tool_icon.png"
+        "BlackCat":"\/extension\/phpmanufaktur\/phpManufaktur\/ContactForm\/Data\/Setup\/Icon\/icon.png",
+        "WebsiteBaker":"\/extension\/phpmanufaktur\/phpManufaktur\/ContactForm\/Data\/Setup\/Icon\/tool_icon.png"
       }
   },
   "license": {
     "name":"MIT License",
-    "url":"https:\/\/github.com\/phpManufaktur\/kfContact\/raw\/master\/LICENSE.md"
+    "url":"https:\/\/github.com\/phpManufaktur\/kfContactForm\/raw\/master\/LICENSE.md"
   },
   "download":{
     "availability":"public",
     "agreement":"free",
     "github":{
       "organization":"phpManufaktur",
-      "repository":"kfContact"
+      "repository":"kfContactForm"
     },
-    "url":"https:\/\/github.com\/phpManufaktur\/kfContact"
+    "url":"https:\/\/github.com\/phpManufaktur\/kfContactForm"
   }
 }

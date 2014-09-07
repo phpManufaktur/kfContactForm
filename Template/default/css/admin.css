@@ -17,6 +17,10 @@ ul.nav-sub {
   margin-top: 15px;
 }
 
+a.kitframework-icon {
+  color: #da251d !important;
+}
+
 /*
   Wrapper for the about dialog
 */

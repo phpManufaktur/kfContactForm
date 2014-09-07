@@ -21,7 +21,6 @@ class Admin extends Alert
 {
 
     protected static $usage = null;
-    protected static $usage_param = null;
     protected static $config = null;
 
     /**
@@ -35,7 +34,6 @@ class Admin extends Alert
 
         $cms = $this->app['request']->get('usage');
         self::$usage = is_null($cms) ? 'framework' : $cms;
-        self::$usage_param = (self::$usage != 'framework') ? '?usage='.self::$usage : '';
         // set the locale from the CMS locale
         if (self::$usage != 'framework') {
             $app['translator']->setLocale($this->app['session']->get('CMS_LOCALE', 'en'));
@@ -59,8 +57,17 @@ class Admin extends Alert
                         'name' => 'about',
                         'text' => $this->app['translator']->trans('About'),
                         'hint' => $this->app['translator']->trans('Information about the ContactForm extension'),
-                        'link' => FRAMEWORK_URL.'/admin/form/about'.self::$usage_param,
-                        'active' => ($active == 'about')
+                        'link' => FRAMEWORK_URL.'/admin/form/about',
+                        'active' => ($active === 'about')
+                    );
+                    break;
+                case 'edit':
+                    $toolbar[$tab] = array(
+                        'name' => 'edit',
+                        'text' => ($active === 'edit') ? $this->app['translator']->trans('Edit form') : $this->app['translator']->trans('Create form'),
+                        'hint' => $this->app['translator']->trans('Create or edit contact forms'),
+                        'link' => FRAMEWORK_URL.'/admin/form/edit',
+                        'active' => ($active === 'edit')
                     );
                     break;
             }
@@ -83,6 +90,8 @@ class Admin extends Alert
             case 'about':
                 $route = '/admin/form/about';
                 break;
+            case 'edit':
+                $route = '/admin/form/edit';
             default:
                 throw new \Exception('Invalid default nav_tab in configuration: '.self::$config['nav_tabs']['default']);
         }

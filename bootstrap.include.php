@@ -50,3 +50,8 @@ $app->get('/admin/form',
     'phpManufaktur\ContactForm\Control\Admin\Admin::ControllerSelectDefaultTab');
 $app->get('/admin/form/about',
     'phpManufaktur\ContactForm\Control\Admin\About::Controller');
+
+$app->get('/admin/form/edit/{form_id}',
+    'phpManufaktur\ContactForm\Control\Admin\Form::Controller')
+    ->assert('form_id', '\d+')
+    ->value('form_id', -1);
