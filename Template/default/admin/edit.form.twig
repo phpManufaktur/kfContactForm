@@ -1,0 +1,172 @@
+{#
+  ContactForm
+
+  @author Team phpManufaktur <team@phpmanufaktur.de>
+  @link https://kit2.phpmanufaktur.de/ContactForm
+  @copyright 2014 Ralf Hertsch <ralf.hertsch@phpmanufaktur.de>
+  @license MIT License (MIT) http://www.opensource.org/licenses/MIT
+#}
+{% if usage == 'framework' %}
+  {% set template_namespace = '@phpManufaktur/Basic/Template' %}
+  {% set template_file = 'framework/body.twig' %}
+{% else %}
+  {% set template_namespace = '@phpManufaktur/ContactForm/Template' %}
+  {% set template_file = 'admin/body.twig' %}
+{% endif %}
+{% extends getTemplateFile(template_namespace, template_file) %}
+{% block title %}{{ 'Create or edit ContactForm'|trans }}{% endblock %}
+{% block stylesheet %}
+  {{ parent() }}
+  {% if fileExists(MANUFAKTUR_PATH ~ '/ContactForm/Template/' ~ FRAMEWORK_TEMPLATES.0 ~ '/css/admin.min.css') %}
+    <link rel="stylesheet" type="text/css" href="{{ MANUFAKTUR_URL ~ '/ContactForm/Template/' ~ FRAMEWORK_TEMPLATES.0 ~ '/css/admin.min.css' }}" />
+  {% else %}
+    <link rel="stylesheet" type="text/css" href="{{ MANUFAKTUR_URL ~ '/ContactForm/Template/default/css/admin.min.css' }}" />
+  {% endif %}
+{% endblock stylesheet %}
+
+{% block content %}
+  <!-- {{ _self.getTemplateName() }} -->
+  <div class="container{% if usage != 'framework'%}-fluid{% endif %}">
+    {% include '@phpManufaktur/ContactForm/Template/default/admin/toolbar.twig' %}
+    
+    {{ alert }}
+    
+    {# assign the bootstrap 3 theming for horizontal forms to the Symfony Form Factory output #}  
+    {#% form_theme form '@phpManufaktur/Contact/Template/default/pattern/form.fields.horizontal.twig' %#}
+    
+    <form action="{{ FRAMEWORK_URL ~ '/admin/form/edit/id?usage=' ~ usage }}" class="form-horizontal" method="post" role="form">
+    
+      {# set empty values for all fieldsets we want to use #}
+      {% set contact_fieldset = [] %}
+      {% set person_fieldset = [] %}
+      {% set company_fieldset = [] %}
+      {% set communication_fieldset = [] %}
+      {% set address_private_fieldset = [] %}
+      {% set address_business_fieldset = [] %}
+      {% set address_delivery_fieldset = [] %}
+      {% set address_billing_fieldset = [] %}
+      {% set extra_fieldset = [] %}
+      {% set note_fieldset = [] %}
+      
+      {% for child in form.children %}
+        {# assign each field to the correct fieldset #}
+        {% if 'hidden' in child.vars.block_prefixes %}
+          {# prompt all hidden fields at the top of the form #}
+          {{ form_row(child) }}
+        {% elseif (('contact_' in child.vars.name) or ('category_' in child.vars.name) or ('tags' == child.vars.name)) and ('contact_note' not in child.vars.name) %}
+          {% set contact_fieldset = contact_fieldset|merge([child.vars.name]) %}
+        {% elseif 'person_' in child.vars.name %}
+          {% set person_fieldset = person_fieldset|merge([child.vars.name]) %}
+        {% elseif 'company_' in child.vars.name %}
+          {% set company_fieldset = company_fieldset|merge([child.vars.name]) %}
+        {% elseif 'communication_' in child.vars.name %}
+          {% set communication_fieldset = communication_fieldset|merge([child.vars.name]) %}
+        {% elseif 'address_private_' in child.vars.name %}
+          {% set address_private_fieldset = address_private_fieldset|merge([child.vars.name]) %}
+        {% elseif 'address_business_' in child.vars.name %}
+          {% set address_business_fieldset = address_business_fieldset|merge([child.vars.name]) %}
+        {% elseif 'address_delivery_' in child.vars.name %}
+          {% set address_delivery_fieldset = address_delivery_fieldset|merge([child.vars.name]) %}
+        {% elseif 'address_billing_' in child.vars.name %}
+          {% set address_billing_fieldset = address_billing_fieldset|merge([child.vars.name]) %}
+        {% elseif 'extra_' in child.vars.name %}
+          {% set extra_fieldset = extra_fieldset|merge([child.vars.name]) %}
+        {% elseif  'contact_note' in child.vars.name %}
+          {% set note_fieldset = note_fieldset|merge([child.vars.name]) %}
+        {% endif %}
+      {% endfor %}  
+      
+      {% set fieldsets_left = {'contact_settings':contact_fieldset,'person':person_fieldset,'company':company_fieldset,
+        'communication':communication_fieldset,'extra_fields':extra_fieldset} %}
+      {% set fieldsets_right = {'address_private':address_private_fieldset,'address_business':address_business_fieldset,
+        'address_delivery':address_delivery_fieldset,'address_billing':address_billing_fieldset,'contact_note':note_fieldset} %}
+      
+      <div class="row">
+        <div class="col-md-6">
+          {# left column #}
+          {% for fieldset_name, fieldset_childs in fieldsets_left %}
+            {% if fieldset_childs|length > 0 %}
+              <fieldset>
+                <legend>{{ fieldset_name|humanize|trans }}</legend>
+                {% set start = true %}
+                {% for field in fieldset_childs %}
+                  {% if start %}
+                    <div class="row">
+                    <div class="col-md-3 col-sm-2">
+                    {% set start = false %}
+                  {% endif %}
+                  {% for child in form.children %}
+                    {% if child.vars.name == field %}
+                      {% if 'field_' in field %}
+                        <span class="field-select">{{ form_widget(child) }}</span>
+                      {% elseif 'required_' in field %}
+                        <span class="field-required">{{ form_widget(child) }}</span>
+                      {% elseif 'hidden_' in field %}
+                        <span class="field-hidden{% if child.vars.disabled %} disabled{% endif %}">{{ form_widget(child) }}</span>
+                        </div>{# close column #}
+                        <div class="col-md-9 col-sm-10">
+                          <div class="field-name">{{ field['hidden_'|length:]|humanize|trans }}</div>
+                          {% if field == 'hidden_contact_type' %}
+                            {{ form_widget(form.contact_types) }}
+                          {% elseif field == 'hidden_contact_category' %}
+                            {{ form_widget(form.contact_categories) }}
+                          {% elseif field == 'hidden_contact_tags' %}
+                            {{ form_widget(form.contact_tags) }}
+                          {% endif %}
+                        </div>
+                        </div>{# close row #}
+                        {% set start = true %}
+                      {% endif %}
+                    {% endif %}
+                  {% endfor %}
+                {% endfor %}
+              </fieldset> 
+            {% endif %}
+          {% endfor %}          
+        </div>{# col-sm-6 #}
+        
+        <div class="col-sm-6">
+          {# right column #}
+          {% for fieldset_name, fieldset_childs in fieldsets_right %}
+            {% if fieldset_childs|length > 0 %}
+              <fieldset>
+                <legend>{{ fieldset_name|humanize|trans }}</legend>
+                {% set start = true %}
+                {% for field in fieldset_childs %}
+                  {% if start %}
+                    <div class="row">
+                    <div class="col-md-3 col-sm-2">
+                    {% set start = false %}
+                  {% endif %}
+                  {% for child in form.children %}
+                    {% if child.vars.name == field %}
+                      {% if 'field_' in field %}
+                        <span class="field-select">{{ form_widget(child) }}</span>
+                      {% elseif 'required_' in field %}
+                        <span class="field-required">{{ form_widget(child) }}</span>
+                      {% elseif 'hidden_' in field %}
+                        <span class="field-hidden{% if child.vars.disabled %} disabled{% endif %}">{{ form_widget(child) }}</span>
+                        </div>{# close column #}
+                        <div class="col-md-9 col-sm-10">
+                          <div class="field-name">{{ field['hidden_'|length:]|humanize|trans }}</div>
+                        </div>
+                        </div>{# close row #}
+                        {% set start = true %}
+                      {% endif %}
+                    {% endif %}
+                  {% endfor %}
+                {% endfor %}
+              </fieldset> 
+            {% endif %}
+          {% endfor %}   
+        </div>
+        
+      </div>{# row #}
+      
+      
+      
+      {{ form_rest(form) }}
+      
+    </form>
+  </div>
+{% endblock content %}

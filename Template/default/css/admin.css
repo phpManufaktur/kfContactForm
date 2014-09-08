@@ -28,3 +28,37 @@ a.kitframework-icon {
   margin: 50px 0 0 0;
   padding: 0;
 }
+
+fieldset {
+  border: 1px solid #dcdcdc;
+  padding: 10px;
+  margin: 10px 0;
+}
+legend {
+  width: auto;
+  padding: 0 10px;
+  margin-bottom: 0;
+  border-bottom: none;
+  font-size: 12px;
+  color: #dcdcdc;
+}
+
+.field-hidden,
+.field-required,
+.field-select {
+  padding: 3px;
+  margin-right: 3px;
+}
+.field-required {
+  background-color: #da251d;
+}
+.field-select {
+  background-color: #006400;
+}
+.field-hidden {
+  background-color: #000;
+  margin-right: 0;
+}
+.field-hidden.disabled {
+  background-color: #d3d3d3;
+}
