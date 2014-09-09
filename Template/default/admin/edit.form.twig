@@ -32,9 +32,9 @@
     {{ alert }}
     
     {# assign the bootstrap 3 theming for horizontal forms to the Symfony Form Factory output #}  
-    {#% form_theme form '@phpManufaktur/Contact/Template/default/pattern/form.fields.horizontal.twig' %#}
+    {% form_theme form '@phpManufaktur/Contact/Template/default/pattern/form.fields.horizontal.twig' %}
     
-    <form action="{{ FRAMEWORK_URL ~ '/admin/form/edit/id?usage=' ~ usage }}" class="form-horizontal" method="post" role="form">
+    <form action="{{ FRAMEWORK_URL ~ '/admin/form/edit/check?usage=' ~ usage }}" class="form-horizontal" method="post" role="form">
     
       {# set empty values for all fieldsets we want to use #}
       {% set contact_fieldset = [] %}
@@ -50,10 +50,10 @@
       
       {% for child in form.children %}
         {# assign each field to the correct fieldset #}
-        {% if 'hidden' in child.vars.block_prefixes %}
+        {#% if 'hidden' in child.vars.block_prefixes %}
           {# prompt all hidden fields at the top of the form #}
-          {{ form_row(child) }}
-        {% elseif (('contact_' in child.vars.name) or ('category_' in child.vars.name) or ('tags' == child.vars.name)) and ('contact_note' not in child.vars.name) %}
+          {#{ form_row(child) }#}
+        {% if (('contact_' in child.vars.name) or ('category_' in child.vars.name) or ('tags' == child.vars.name)) and ('contact_note' not in child.vars.name) %}
           {% set contact_fieldset = contact_fieldset|merge([child.vars.name]) %}
         {% elseif 'person_' in child.vars.name %}
           {% set person_fieldset = person_fieldset|merge([child.vars.name]) %}
@@ -81,6 +81,19 @@
       {% set fieldsets_right = {'address_private':address_private_fieldset,'address_business':address_business_fieldset,
         'address_delivery':address_delivery_fieldset,'address_billing':address_billing_fieldset,'contact_note':note_fieldset} %}
       
+      {{ form_row(form.form_id) }}
+      {% if form.form_id.vars.value > 0 %}
+        <div class="form-group">
+          <label class="col-sm-3 control-label">{{ 'form_id'|humanize|trans }}</label>          
+          <div class="col-sm-9">
+            <p class="form-control-static">{{ '%05d'|format(form.form_id.vars.value) }}</p>
+          </div>
+        </div>
+      {% endif %}
+      {{ form_row(form.form_name) }}
+      {{ form_row(form.form_description) }}
+      {{ form_row(form.form_status) }}
+        
       <div class="row">
         <div class="col-md-6">
           {# left column #}
@@ -102,10 +115,18 @@
                       {% elseif 'required_' in field %}
                         <span class="field-required">{{ form_widget(child) }}</span>
                       {% elseif 'hidden_' in field %}
-                        <span class="field-hidden{% if child.vars.disabled %} disabled{% endif %}">{{ form_widget(child) }}</span>
+                        {% if 'hidden' not in child.vars.block_prefixes %}
+                          <span class="field-hidden{% if child.vars.disabled %} disabled{% endif %}">{{ form_widget(child) }}</span>
+                        {% endif %}
                         </div>{# close column #}
                         <div class="col-md-9 col-sm-10">
-                          <div class="field-name">{{ field['hidden_'|length:]|humanize|trans }}</div>
+                          <div class="field-name">
+                            {% if 'hidden_extra_' in field %}
+                              {{ field['hidden_extra_'|length:]|humanize|trans }}
+                            {% else %}
+                              {{ field['hidden_'|length:]|humanize|trans }}
+                            {% endif %}
+                          </div>
                           {% if field == 'hidden_contact_type' %}
                             {{ form_widget(form.contact_types) }}
                           {% elseif field == 'hidden_contact_category' %}
@@ -145,7 +166,9 @@
                       {% elseif 'required_' in field %}
                         <span class="field-required">{{ form_widget(child) }}</span>
                       {% elseif 'hidden_' in field %}
-                        <span class="field-hidden{% if child.vars.disabled %} disabled{% endif %}">{{ form_widget(child) }}</span>
+                        {% if 'hidden' not in child.vars.block_prefixes %}
+                          <span class="field-hidden{% if child.vars.disabled %} disabled{% endif %}">{{ form_widget(child) }}</span>
+                        {% endif %}
                         </div>{# close column #}
                         <div class="col-md-9 col-sm-10">
                           <div class="field-name">{{ field['hidden_'|length:]|humanize|trans }}</div>
@@ -167,6 +190,8 @@
       
       {{ form_rest(form) }}
       
+      
+      <button type="submit" class="btn btn-default form-control">{{ 'Submit'|trans }}</button>
     </form>
   </div>
 {% endblock content %}

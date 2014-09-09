@@ -12,6 +12,7 @@
 namespace phpManufaktur\ContactForm\Data\Setup;
 
 use Silex\Application;
+use phpManufaktur\ContactForm\Data\Form\Definition;
 
 class Uninstall
 {
@@ -25,6 +26,9 @@ class Uninstall
     public function Controller(Application $app)
     {
         $this->app = $app;
+
+        $dataDefinition = new Definition($app);
+        $dataDefinition->dropTable();
 
         return $app['translator']->trans('Successfull uninstalled the extension %extension%.',
             array('%extension%' => 'ContactForm'));

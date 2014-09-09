@@ -55,3 +55,5 @@ $app->get('/admin/form/edit/{form_id}',
     'phpManufaktur\ContactForm\Control\Admin\Form::Controller')
     ->assert('form_id', '\d+')
     ->value('form_id', -1);
+$app->post('/admin/form/edit/check',
+    'phpManufaktur\ContactForm\Control\Admin\Form::ControllerCheck');

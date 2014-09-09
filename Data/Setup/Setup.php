@@ -14,6 +14,7 @@ namespace phpManufaktur\ContactForm\Data\Setup;
 use Silex\Application;
 use phpManufaktur\Basic\Control\CMS\InstallAdminTool;
 use phpManufaktur\ContactForm\Control\Configuration;
+use phpManufaktur\ContactForm\Data\Form\Definition;
 
 class Setup
 {
@@ -39,6 +40,9 @@ class Setup
             // setup ContactForm as Add-on in the CMS
             $admin_tool = new InstallAdminTool($app);
             $admin_tool->exec(MANUFAKTUR_PATH.'/ContactForm/extension.json', '/form/cms');
+
+            $dataDefinition = new Definition($app);
+            $dataDefinition->createTable();
 
             return $app['translator']->trans('Successfull installed the extension %extension%.',
                 array('%extension%' => 'ContactForm'));

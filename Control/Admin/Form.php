@@ -12,39 +12,89 @@
 namespace phpManufaktur\ContactForm\Control\Admin;
 
 use Silex\Application;
+use phpManufaktur\Contact\Data\Contact\ExtraType;
+use phpManufaktur\ContactForm\Data\Form\Definition;
 
 class Form extends Admin
 {
+    protected $dataDefinition = null;
 
+    protected function initialize(Application $app)
+    {
+        parent::initialize($app);
 
-    protected function getContactForm($fields=array(), $data=array())
+        $this->dataDefinition = new Definition($app);
+    }
+
+    /**
+     * Create the Form Form ...
+     *
+     * @param array $data
+     */
+    protected function getContactForm($data=array())
     {
         // create the form
         $form = $this->app['form.factory']->createBuilder('form', null,
             array('csrf_protection' => self::$config['form']['csrf']));
 
+        $form->add('form_id', 'hidden', array(
+            'data' => isset($data['form_id']) ? $data['form_id'] : -1
+        ));
+        $form->add('form_name', 'text', array(
+            'data' => isset($data['form_name']) ? $data['form_name'] : '',
+            'required' => true,
+        ));
+        $form->add('form_description', 'textarea', array(
+            'data' => isset($data['form_description']) ? $data['form_description'] : '',
+            'required' => false
+        ));
+
+        $status = array();
+        foreach ($this->dataDefinition->getStatusTypes() as $type) {
+            $status[$type] = $this->app['utils']->humanize($type);
+        }
+        $form->add('form_status', 'choice', array(
+            'data' => isset($data['form_status']) ? $data['form_status'] : 'LOCKED',
+            'choices' => $status,
+            'required' => true,
+            'empty_value' => false
+        ));
+
         foreach (self::$config['form']['field']['list'] as $field) {
             // checkbox to select the field
             $form->add('field_'.$field, 'checkbox', array(
-                'data' => (isset($data[$field]['field']) || in_array($field, self::$config['form']['field']['must_have'])),
+                'data' => (isset($data['field']['contact'][$field]['data']) || in_array($field, self::$config['form']['field']['must_have'])),
                 'required' => ($field === 'communication_email'),
-                'attr' => array('class' => 'field-select'),
+                'attr' => array(
+                    'class' => 'field-select',
+                    'title' => $this->app['translator']->trans('Check to use this field in the form')
+                ),
                 'disabled' => ($field === 'communication_email')
             ));
             // checkbox to set the field as required
             $form->add('required_'.$field, 'checkbox', array(
-                'data' => (isset($data[$field]['required']) || in_array($field, self::$config['form']['field']['required'])),
+                'data' => ((isset($data['field']['contact'][$field]['required']) && $data['field']['contact'][$field]['required']) || in_array($field, self::$config['form']['field']['required'])),
                 'required' => ($field === 'communication_email'),
-                'attr' => array('class' => 'field-require'),
+                'attr' => array(
+                    'class' => 'field-require',
+                    'title' => $this->app['translator']->trans('Check to mark this field as required')
+                ),
                 'disabled' => ($field === 'communication_email')
             ));
             // checkbox to hide the field
-            $form->add('hidden_'.$field, 'checkbox', array(
-                'data' => isset($data[$field]['hidden']),
-                'required' => false,
-                'attr' => array('class' => 'field-hidden'),
-                'disabled' => !in_array($field, self::$config['form']['field']['hidden'])
-            ));
+            if (in_array($field, self::$config['form']['field']['hidden'])) {
+                $form->add('hidden_'.$field, 'checkbox', array(
+                    'data' => (isset($data['field']['contact'][$field]['hidden']) && $data['field']['contact'][$field]['hidden']),
+                    'required' => false,
+                    'attr' => array(
+                        'class' => 'field-hidden',
+                        'title' => $this->app['translator']->trans('Check to hide this field in the form')
+                    )
+                ));
+            }
+            else {
+                $form->add('hidden_'.$field, 'hidden');
+            }
         }
 
         // add contact types
@@ -56,7 +106,7 @@ class Form extends Admin
             ),
             'expanded' => false,
             'empty_value' => false,
-            'data' => null
+            'data' => isset($data['field']['contact']['contact_type']['data']) ? $data['field']['contact']['contact_type']['data'] : 'MIXED'
         ));
 
         // add contact categories
@@ -65,7 +115,7 @@ class Form extends Admin
             'choices' => $categories,
             'expanded' => false,
             'empty_value' => false,
-            'data' => null
+            'data' => isset($data['field']['contact']['contact_category']['data']) ? $data['field']['contact']['contact_category']['data'] : null
         ));
 
         // add contact tags
@@ -74,10 +124,88 @@ class Form extends Admin
             'choices' => $tags,
             'expanded' => true,
             'multiple' => true,
-            'data' => null
+            'data' => isset($data['field']['contact']['contact_tags']['data']) ? $data['field']['contact']['contact_tags']['data'] : null
         ));
 
+        $dataExtraType = new ExtraType($this->app);
+        $extra_fields = $dataExtraType->selectAll();
+        if (is_array($extra_fields)) {
+            foreach ($extra_fields as $field) {
+                $field_name = 'extra_'.strtolower($field['extra_type_name']);
+                $form->add('field_'.$field_name, 'checkbox', array(
+                    'data' => isset($data['field']['contact'][$field_name]['data']),
+                    'required' => false,
+                    'attr' => array(
+                        'class' => 'field-select',
+                        'title' => $this->app['translator']->trans('Check to use this field in the form')
+                    )
+                ));
+                $form->add('required_'.$field_name, 'checkbox', array(
+                    'data' => (isset($data['field']['contact'][$field_name]['required']) && $data['field']['contact'][$field_name]['required']),
+                    'required' => false,
+                    'attr' => array(
+                        'class' => 'field-required',
+                        'title' => $this->app['translator']->trans('Check to mark this field as required')
+                    )
+                ));
+                $form->add('hidden_'.$field_name, 'hidden');
+            }
+        }
+
         return $form->getForm();
+    }
+
+    public function ControllerCheck(Application $app)
+    {
+        $this->initialize($app);
+
+        $form = $this->getContactForm();
+        $form->bind($this->app['request']);
+
+        if ($form->isValid()) {
+            // the form is valid
+            $form_data = $form->getData();
+
+            $data = array();
+            foreach ($form_data as $item_key => $item_value) {
+                if (strpos($item_key, 'field_') === 0) {
+                    $field = substr($item_key, strlen('field_'));
+                    if ($item_value) {
+                        switch ($field) {
+                            case 'contact_type':
+                                $value = $form_data['contact_types'];
+                                break;
+                            case 'contact_category':
+                                $value = $form_data['contact_categories'];
+                                break;
+                            case 'contact_tags':
+                                $value = $form_data['contact_tags'];
+                                break;
+                            default:
+                                $value = $item_value;
+                                break;
+                        }
+                        $data['field']['contact'][$field] = array(
+                            'name' => $field,
+                            'data' => $value,
+                            'required' => isset($form_data['required_'.$field]) ? $form_data['required_'.$field] : false,
+                            'hidden' => isset($form_data['hidden_'.$field]) ? $form_data['hidden_'.$field] : false
+                        );
+                    }
+                }
+            }
+            echo "<pre>";
+            print_r($data);
+            echo "</pre>";
+        }
+        else {
+            // general error (timeout, CSFR ...)
+            $this->setAlert('The form is not valid, please check your input and try again!', array(),
+                self::ALERT_TYPE_DANGER, true, array('form_errors' => $form->getErrorsAsString(),
+                    'method' => __METHOD__, 'line' => __LINE__));
+
+        }
+        return __METHOD__;
     }
 
     public function Controller(Application $app, $form_id)

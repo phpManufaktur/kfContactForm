@@ -50,15 +50,23 @@ legend {
   margin-right: 3px;
 }
 .field-required {
-  background-color: #da251d;
+  background-color: #ff6347;
 }
 .field-select {
-  background-color: #006400;
+  background-color: #66cdaa;
 }
 .field-hidden {
-  background-color: #000;
+  background-color: #778899;
   margin-right: 0;
 }
-.field-hidden.disabled {
-  background-color: #d3d3d3;
+.field-name {
+  font-style: italic;
 }
+
+#form_contact_tags,
+select#form_contact_categories,
+select#form_contact_types {
+  margin-top: 5px;
+  margin-bottom: 10px;
+}
+
