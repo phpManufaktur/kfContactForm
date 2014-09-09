@@ -194,18 +194,50 @@ class Form extends Admin
                     }
                 }
             }
-            echo "<pre>";
-            print_r($data);
-            echo "</pre>";
+
+            if (!empty($data)) {
+                if (!isset($data['field']['contact']['communication_email'])) {
+                    $data['field']['contact']['communication_email'] = array(
+                        'name' => 'communication_email',
+                        'data' => true,
+                        'required' => true,
+                        'hidden' => false
+                    );
+                }
+                $form_id = isset($form_data['form_id']) ? $form_data['form_id'] : -1;
+                $definition = array(
+                    'form_name' => (isset($form_data['form_name']) && !is_null($form_data['form_name'])) ? $form_data['form_name'] : '',
+                    'form_description' => (isset($form_data['form_description']) && !is_null($form_data['form_description'])) ? $form_data['form_description'] : '',
+                    'form_status' => isset($form_data['form_status']) ? $form_data['form_status'] : 'LOCKED',
+                    'data' => serialize($data)
+                );
+                if ($form_id > 0) {
+                    // update existing definition
+                    $this->dataDefinition->update($form_id, $data);
+                    $this->setAlert('The record with the ID %id% was successfull updated.',
+                        array('%id%' => $form_id), self::ALERT_TYPE_SUCCESS);
+                }
+                else {
+                    // insert a new definition
+                    $form_id = $this->dataDefinition->insert($data);
+                    $this->setAlert('The record with the ID %id% was successfull inserted.',
+                        array('%id%' => $form_id), self::ALERT_TYPE_SUCCESS);
+                }
+                return $this->Controller($app, $form_id);
+            }
+            else {
+                // no valid definition
+                $this->setAlert('The form definition does not contain any field and is not valid.', array(), self::ALERT_TYPE_WARNING);
+                return $this->Controller($app, -1);
+            }
         }
         else {
             // general error (timeout, CSFR ...)
             $this->setAlert('The form is not valid, please check your input and try again!', array(),
                 self::ALERT_TYPE_DANGER, true, array('form_errors' => $form->getErrorsAsString(),
                     'method' => __METHOD__, 'line' => __LINE__));
-
+            return $this->Controller($app, -1);
         }
-        return __METHOD__;
     }
 
     public function Controller(Application $app, $form_id)

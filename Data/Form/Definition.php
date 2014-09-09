@@ -80,4 +80,58 @@ EOD;
         return $this->app['db.utils']->getEnumValues(self::$table_name, 'form_status');
     }
 
+    /**
+     * Insert a new definition record
+     *
+     * @param array $data
+     * @throws \Exception
+     * @return integer form_id
+     */
+    public function insert($data)
+    {
+        try {
+            $insert = array();
+            foreach ($data as $key => $value) {
+                $insert[$key] = (is_string($value)) ? $this->app['utils']->sanitizeText($value) : $value;
+            }
+            if (isset($insert['form_id'])) {
+                unset($insert['form_id']);
+            }
+            $this->app['db']->insert(self::$table_name, $insert);
+            return $this->app['db']->lastInsertId();
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Update an existing definition record
+     *
+     * @param integer $form_id
+     * @param array $data
+     * @throws \Exception
+     */
+    public function update($form_id, $data)
+    {
+        try {
+            $check = array('form_id', 'timestamp');
+            foreach ($check as $key) {
+                if (isset($data[$key])) {
+                    unset($data[$key]);
+                }
+            }
+            $update = array();
+            foreach ($data as $key => $value) {
+                if (is_null($value)) {
+                    continue;
+                }
+                $update[$key] = is_string($value) ? $this->app['utils']->sanitizeText($value) : $value;
+            }
+            if (!empty($update)) {
+                $this->app['db']->update(self::$table_name, $update, array('form_id' => $form_id));
+            }
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
 }
