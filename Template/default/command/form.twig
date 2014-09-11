@@ -1,0 +1,33 @@
+{#
+  ContactForm
+
+  @author Team phpManufaktur <team@phpmanufaktur.de>
+  @link https://kit2.phpmanufaktur.de/ContactForm
+  @copyright 2014 Ralf Hertsch <ralf.hertsch@phpmanufaktur.de>
+  @license MIT License (MIT) http://www.opensource.org/licenses/MIT
+#}
+{% extends getTemplateFile('@phpManufaktur/Basic/Template', 'kitcommand/bootstrap/iframe.body.twig') %}
+{% block title %}{{ 'ContactForm'|trans }}{% endblock %}
+{% block stylesheet %}
+  {{ parent() }}
+  <link rel="stylesheet" type="text/css" href="{{ MANUFAKTUR_URL }}/ContactForm/Template/default/css/command.css" />
+{% endblock %}
+
+{% block content %}
+  <!-- {{ _self.getTemplateName() }} -->
+
+  <h2>{{ 'ContactForm'|trans }}</h2>
+
+  {{ parent() }}
+
+  {# assign the bootstrap 3 theming for horizontal forms to the Symfony Form Factory output #}  
+  {% form_theme form '@phpManufaktur/Contact/Template/default/pattern/form.fields.horizontal.twig' %}
+  
+  <form action="{{ FRAMEWORK_URL ~ '/form/check' }}" class="form-horizontal" method="post" role="form">
+  
+    {{ form_widget(form) }}
+  
+  </form>
+ 
+
+{% endblock %}

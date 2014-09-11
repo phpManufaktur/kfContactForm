@@ -134,4 +134,60 @@ EOD;
             throw new \Exception($e);
         }
     }
+
+    /**
+     * Select the definition for the given $form_id
+     *
+     * @param integer $form_id
+     * @throws \Exception
+     * @return Ambigous <boolean, array>
+     */
+    public function select($form_id)
+    {
+        try {
+            $SQL = "SELECT * FROM `".self::$table_name."` WHERE `form_id`=$form_id";
+            $result = $this->app['db']->fetchAssoc($SQL);
+            $definition = array();
+            if (is_array($result)) {
+                foreach ($result as $key => $value) {
+                    $definition[$key] = is_string($value) ? $this->app['utils']->unsanitizeText($value) : $value;
+                }
+            }
+            return (!empty($definition)) ? $definition : false;
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
+
+    /**
+     * Select all definitions
+     *
+     * @throws \Exception
+     * @return Ambigous <boolean, array>
+     */
+    public function selectAll($suppress_deleted=true)
+    {
+        try {
+            if ($suppress_deleted) {
+                $SQL = "SELECT * FROM `".self::$table_name."` WHERE `form_status` != 'DELETED' ORDER BY `form_name` ASC";
+            }
+            else {
+                $SQL = "SELECT * FROM `".self::$table_name."` ORDER BY `form_name` ASC";
+            }
+            $results = $this->app['db']->fetchAll($SQL);
+            $definitions = array();
+            if (is_array($results)) {
+                foreach ($results as $result) {
+                    $item = array();
+                    foreach ($result as $key => $value) {
+                        $item[$key] = (is_string($value)) ? $this->app['utils']->unsanitizeText($value) : $value;
+                    }
+                    $definitions[] = $item;
+                }
+            }
+            return (!empty($definitions)) ? $definitions : false;
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new \Exception($e);
+        }
+    }
 }

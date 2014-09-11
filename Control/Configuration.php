@@ -42,7 +42,8 @@ class Configuration
         return array(
             'nav_tabs' => array(
                 'order' => array(
-                    'edit',
+                    'definition_list',
+                    'definition_edit',
                     'about'
                 ),
                 'default' => 'about'
@@ -53,7 +54,7 @@ class Configuration
                     'hidden' => array(
                         'contact_id',
                         'contact_category',
-                        'contact_tag',
+                        'tags',
                         'contact_type',
                         'address_primary_id',
                         'address_company_id',
@@ -69,7 +70,7 @@ class Configuration
                     'list' => array(
                         'contact_type',
                         'contact_category',
-                        'contact_tags',
+                        'tags',
                         'contact_note',
 
                         'company_name',

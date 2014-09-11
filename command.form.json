@@ -1,0 +1,39 @@
+{
+  "command":"Form",
+  "vendor": {
+    "name":"phpManufaktur",
+    "url":"https://kit2.phpmanufaktur.de"
+    },
+  "name": {
+    "en":"ContactForm for the kitFramework",
+    "de":"ContactForm für das kitFramework"
+  },
+  "description": {
+    "en":"Contact forms for the kitFramework",
+    "de":"Kontakt-Formulare für das kitFramework"
+  },
+  "info": {
+    "en": {
+      "link":"https://kit2.phpmanufaktur.de/ContactForm"
+    }
+  },
+  "help": {
+    "en": {
+      "link":"https://gist.github.com/fd10de9cf78c8953b007.git",
+      "gist_id":"fd10de9cf78c8953b007",
+      "file": {
+        "help":"kitcommand_form_en.md"
+      }
+    }
+  },
+  "issues": {
+    "en": {
+      "link":"https://github.com/phpManufaktur/kfContactForm/issues"
+    }
+  },
+  "support": {
+    "en": {
+      "link":"https://support.phpmanufaktur.de"
+    }
+  }
+}

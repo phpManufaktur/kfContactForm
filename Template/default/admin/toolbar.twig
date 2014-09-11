@@ -6,8 +6,10 @@
         <a href="{{ item.link ~ '?usage=' ~ usage }}" title="{{ item.hint|trans }}">
           {% if item.name == 'about' %}
             <i class="fa fa-question"></i>
-          {% elseif item.name == 'edit' %}
+          {% elseif item.name == 'definition_edit' %}
             <i class="fa fa-edit"></i>
+          {% elseif item.name == 'definition_list' %}
+            <i class="fa fa-list"></i>
           {% endif %}
           {% if item.name != 'about' %}  
             <span class="visible-lg pull-right">&nbsp;{{ item.text|trans }}</span>  

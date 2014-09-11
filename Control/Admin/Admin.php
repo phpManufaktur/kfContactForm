@@ -61,13 +61,22 @@ class Admin extends Alert
                         'active' => ($active === 'about')
                     );
                     break;
-                case 'edit':
+                case 'definition_edit':
                     $toolbar[$tab] = array(
-                        'name' => 'edit',
+                        'name' => 'definition_edit',
                         'text' => ($active === 'edit') ? $this->app['translator']->trans('Edit form') : $this->app['translator']->trans('Create form'),
-                        'hint' => $this->app['translator']->trans('Create or edit contact forms'),
-                        'link' => FRAMEWORK_URL.'/admin/form/edit',
-                        'active' => ($active === 'edit')
+                        'hint' => $this->app['translator']->trans('Create or edit form definitions'),
+                        'link' => FRAMEWORK_URL.'/admin/form/definition/edit',
+                        'active' => ($active === 'definition_edit')
+                    );
+                    break;
+                case 'definition_list':
+                    $toolbar[$tab] = array(
+                        'name' => 'definition_list',
+                        'text' => $this->app['translator']->trans('Definition List'),
+                        'hint' => $this->app['translator']->trans('List of the available form definitions'),
+                        'link' => FRAMEWORK_URL.'/admin/form/definition/list',
+                        'active' => ($active === 'definition_list')
                     );
                     break;
             }
@@ -90,8 +99,12 @@ class Admin extends Alert
             case 'about':
                 $route = '/admin/form/about';
                 break;
-            case 'edit':
-                $route = '/admin/form/edit';
+            case 'definition_edit':
+                $route = '/admin/form/definition/edit';
+                break;
+            case 'definition_list':
+                $route = '/admin/form/definition/list';
+                break;
             default:
                 throw new \Exception('Invalid default nav_tab in configuration: '.self::$config['nav_tabs']['default']);
         }

@@ -51,9 +51,25 @@ $app->get('/admin/form',
 $app->get('/admin/form/about',
     'phpManufaktur\ContactForm\Control\Admin\About::Controller');
 
-$app->get('/admin/form/edit/{form_id}',
-    'phpManufaktur\ContactForm\Control\Admin\Form::Controller')
+$app->get('/admin/form/definition/edit/{form_id}',
+    'phpManufaktur\ContactForm\Control\Admin\Definition::Controller')
     ->assert('form_id', '\d+')
     ->value('form_id', -1);
-$app->post('/admin/form/edit/check',
-    'phpManufaktur\ContactForm\Control\Admin\Form::ControllerCheck');
+$app->post('/admin/form/definition/edit/check',
+    'phpManufaktur\ContactForm\Control\Admin\Definition::ControllerCheck');
+$app->get('/admin/form/definition/list',
+    'phpManufaktur\ContactForm\Control\Admin\DefinitionList::Controller');
+
+/**
+ * kitCommand routes
+ */
+
+$app->post('/command/form',
+    // the general action controller for all ContactForm kitCommands
+    'phpManufaktur\ContactForm\Control\Command\Action::Controller')
+    ->setOption('info', MANUFAKTUR_PATH.'/ContactForm/command.form.json');
+
+$app->get('/form/view',
+    'phpManufaktur\ContactForm\Control\Command\View::Controller');
+$app->post('/form/check',
+    'phpManufaktur\ContactForm\Control\Command\View::ControllerCheck');

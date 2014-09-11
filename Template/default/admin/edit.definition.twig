@@ -29,12 +29,14 @@
   <div class="container{% if usage != 'framework'%}-fluid{% endif %}">
     {% include '@phpManufaktur/ContactForm/Template/default/admin/toolbar.twig' %}
     
+    <h1>{{ 'Form definition'|trans }}</h1>
+    
     {{ alert }}
     
     {# assign the bootstrap 3 theming for horizontal forms to the Symfony Form Factory output #}  
     {% form_theme form '@phpManufaktur/Contact/Template/default/pattern/form.fields.horizontal.twig' %}
     
-    <form action="{{ FRAMEWORK_URL ~ '/admin/form/edit/check?usage=' ~ usage }}" class="form-horizontal" method="post" role="form">
+    <form action="{{ FRAMEWORK_URL ~ '/admin/form/definition/edit/check?usage=' ~ usage }}" class="form-horizontal" method="post" role="form">
     
       {# set empty values for all fieldsets we want to use #}
       {% set contact_fieldset = [] %}
@@ -75,7 +77,7 @@
           {% set note_fieldset = note_fieldset|merge([child.vars.name]) %}
         {% endif %}
       {% endfor %}  
-      
+ {{ dump(contact_fieldset) }}     
       {% set fieldsets_left = {'contact_settings':contact_fieldset,'person':person_fieldset,'company':company_fieldset,
         'communication':communication_fieldset,'extra_fields':extra_fieldset} %}
       {% set fieldsets_right = {'address_private':address_private_fieldset,'address_business':address_business_fieldset,

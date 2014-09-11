@@ -13,21 +13,25 @@ namespace phpManufaktur\ContactForm\Control\Admin;
 
 use Silex\Application;
 use phpManufaktur\Contact\Data\Contact\ExtraType;
-use phpManufaktur\ContactForm\Data\Form\Definition;
+use phpManufaktur\ContactForm\Data\Form\Definition as DataDefinition;
 
-class Form extends Admin
+class Definition extends Admin
 {
     protected $dataDefinition = null;
 
+    /**
+     * (non-PHPdoc)
+     * @see \phpManufaktur\ContactForm\Control\Admin\Admin::initialize()
+     */
     protected function initialize(Application $app)
     {
         parent::initialize($app);
 
-        $this->dataDefinition = new Definition($app);
+        $this->dataDefinition = new DataDefinition($app);
     }
 
     /**
-     * Create the Form Form ...
+     * Create the Form Definition Form ...
      *
      * @param array $data
      */
@@ -63,7 +67,7 @@ class Form extends Admin
         foreach (self::$config['form']['field']['list'] as $field) {
             // checkbox to select the field
             $form->add('field_'.$field, 'checkbox', array(
-                'data' => (isset($data['field']['contact'][$field]['data']) || in_array($field, self::$config['form']['field']['must_have'])),
+                'data' => (isset($data['field']['contact'][$field]) || in_array($field, self::$config['form']['field']['must_have'])),
                 'required' => ($field === 'communication_email'),
                 'attr' => array(
                     'class' => 'field-select',
@@ -120,11 +124,11 @@ class Form extends Admin
 
         // add contact tags
         $tags = $this->app['contact']->getTagArrayForTwig();
-        $form->add('contact_tags', 'choice', array(
+        $form->add('tags', 'choice', array(
             'choices' => $tags,
             'expanded' => true,
             'multiple' => true,
-            'data' => isset($data['field']['contact']['contact_tags']['data']) ? $data['field']['contact']['contact_tags']['data'] : null
+            'data' => isset($data['field']['contact']['tags']['data']) ? $data['field']['contact']['tags']['data'] : null
         ));
 
         $dataExtraType = new ExtraType($this->app);
@@ -155,6 +159,11 @@ class Form extends Admin
         return $form->getForm();
     }
 
+    /**
+     * Controller to check the form definition form
+     *
+     * @param Application $app
+     */
     public function ControllerCheck(Application $app)
     {
         $this->initialize($app);
@@ -182,7 +191,7 @@ class Form extends Admin
                                 $value = $form_data['contact_tags'];
                                 break;
                             default:
-                                $value = $item_value;
+                                $value = null; //$item_value;
                                 break;
                         }
                         $data['field']['contact'][$field] = array(
@@ -199,7 +208,7 @@ class Form extends Admin
                 if (!isset($data['field']['contact']['communication_email'])) {
                     $data['field']['contact']['communication_email'] = array(
                         'name' => 'communication_email',
-                        'data' => true,
+                        'data' => null,
                         'required' => true,
                         'hidden' => false
                     );
@@ -213,13 +222,13 @@ class Form extends Admin
                 );
                 if ($form_id > 0) {
                     // update existing definition
-                    $this->dataDefinition->update($form_id, $data);
+                    $this->dataDefinition->update($form_id, $definition);
                     $this->setAlert('The record with the ID %id% was successfull updated.',
                         array('%id%' => $form_id), self::ALERT_TYPE_SUCCESS);
                 }
                 else {
                     // insert a new definition
-                    $form_id = $this->dataDefinition->insert($data);
+                    $form_id = $this->dataDefinition->insert($definition);
                     $this->setAlert('The record with the ID %id% was successfull inserted.',
                         array('%id%' => $form_id), self::ALERT_TYPE_SUCCESS);
                 }
@@ -240,19 +249,41 @@ class Form extends Admin
         }
     }
 
+    /**
+     * Controller to create or edit a form definition
+     *
+     * @param Application $app
+     * @param integer $form_id
+     */
     public function Controller(Application $app, $form_id)
     {
         $this->initialize($app);
 
-        $form = $this->getContactForm();
+        if ($form_id > 0) {
+            if (false === ($definition = $this->dataDefinition->select($form_id))) {
+                $this->setAlert('The record with the ID %id% does not exists!',
+                    array('%id%' => $form_id), self::ALERT_TYPE_DANGER);
+            }
+        }
+
+        $data = array();
+        if (isset($definition) && is_array($definition)) {
+            $data = unserialize($definition['data']);
+            $data['form_id'] = $definition['form_id'];
+            $data['form_name'] = $definition['form_name'];
+            $data['form_description'] = $definition['form_description'];
+            $data['form_status'] = $definition['form_status'];
+        }
+
+        $form = $this->getContactForm($data);
 
         return $this->app['twig']->render($this->app['utils']->getTemplateFile(
-            '@phpManufaktur/ContactForm/Template', 'admin/edit.form.twig'),
+            '@phpManufaktur/ContactForm/Template', 'admin/edit.definition.twig'),
             array(
                 'alert' => $this->getAlert(),
                 'config' => self::$config,
                 'usage' => self::$usage,
-                'toolbar' => $this->getToolbar('edit'),
+                'toolbar' => $this->getToolbar('definition_edit'),
                 'form' => $form->createView()
             ));
     }
